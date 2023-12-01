@@ -19,15 +19,14 @@ const Digit = enum(usize) {
     }
 
     fn fromString(string: []const u8) ?Digit {
-        inline for (std.meta.tags(Digit)) |tag| {
+        return for (std.meta.tags(Digit)) |tag| {
             const name = @tagName(tag);
-            if (name.len <= string.len) {
-                if (std.mem.eql(u8, name, string[0..name.len])) {
-                    return tag;
-                }
+            if (name.len > string.len)
+                continue;
+            if (std.mem.eql(u8, name, string[0..name.len])) {
+                break tag;
             }
-        }
-        return null;
+        } else null;
     }
 };
 
@@ -62,14 +61,16 @@ pub fn solve(allocator: std.mem.Allocator, input_path: []const u8) !void {
                     total += 10 * last;
                 }
                 // part 2
-            } else if (Digit.fromString(line.items[idx..line.items.len])) |digit| {
+            } else if (Digit.fromString(line.items[idx..])) |digit| {
                 last = @intFromEnum(digit);
                 if (!found_first) {
                     found_first = true;
                     total += 10 * last;
                 }
-                // We need to remove 1 as the while loop is already adding 1 at each iteration.
-                // Moreover, since we numbers can overlap, we need to remove another 1.
+                // We need to decrement index by two:
+                // 1 is added by the while loop
+                // 1 is the maximum overlap between number names: sevenine, eighthree
+                // This is completely optional, but allows us to skip parts of the line.
                 idx += @tagName(Digit.fromInt(last).?).len - 2;
             }
         }
