@@ -11,14 +11,7 @@ const Digit = enum(usize) {
     eight,
     nine,
 
-    fn fromInt(n: usize) ?Digit {
-        return switch (n) {
-            1...9 => @as(Digit, @enumFromInt(n)),
-            else => null,
-        };
-    }
-
-    fn fromString(string: []const u8) ?Digit {
+    fn fromSlice(string: []const u8) ?Digit {
         return for (std.meta.tags(Digit)) |tag| {
             const name = @tagName(tag);
             if (name.len > string.len)
@@ -61,7 +54,7 @@ pub fn solve(allocator: std.mem.Allocator, input_path: []const u8) !void {
                     total += 10 * last;
                 }
                 // part 2
-            } else if (Digit.fromString(line.items[idx..])) |digit| {
+            } else if (Digit.fromSlice(line.items[idx..])) |digit| {
                 last = @intFromEnum(digit);
                 if (!found_first) {
                     found_first = true;
@@ -71,7 +64,7 @@ pub fn solve(allocator: std.mem.Allocator, input_path: []const u8) !void {
                 // 1 is added by the while loop
                 // 1 is the maximum overlap between number names: sevenine, eighthree
                 // This is completely optional, but allows us to skip parts of the line.
-                idx += @tagName(Digit.fromInt(last).?).len - 2;
+                idx += @tagName(digit).len - 2;
             }
         }
         total += last;

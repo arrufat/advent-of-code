@@ -7,17 +7,6 @@ const Color = enum {
     red,
     green,
     blue,
-
-    fn fromString(string: []const u8) ?Color {
-        return for (std.meta.tags(Color)) |tag| {
-            const name = @tagName(tag);
-            if (name.len > string.len)
-                continue;
-            if (std.mem.eql(u8, name, string[0..name.len])) {
-                break tag;
-            }
-        } else null;
-    }
 };
 
 const Subset = struct {
@@ -79,7 +68,7 @@ fn Game() type {
                     var parts = std.mem.tokenize(u8, pair, " ");
                     try self.subsets.append(.{
                         .amount = try std.fmt.parseUnsigned(usize, parts.next().?, 10),
-                        .color = Color.fromString(parts.next().?).?,
+                        .color = std.meta.stringToEnum(Color, parts.next().?).?,
                     });
                 }
             }
@@ -112,9 +101,9 @@ pub fn solve(allocator: std.mem.Allocator, input_path: []const u8) !void {
         try game.parseId(parts.first());
         try game.parseSubsets(parts.next().?);
         const contents: []const Subset = &.{
-            .{ .amount = 12, .color = Color.red },
-            .{ .amount = 13, .color = Color.green },
-            .{ .amount = 14, .color = Color.blue },
+            .{ .amount = 12, .color = .red },
+            .{ .amount = 13, .color = .green },
+            .{ .amount = 14, .color = .blue },
         };
         part_one += if (game.check(contents)) game.id else 0;
         part_two += game.power();
