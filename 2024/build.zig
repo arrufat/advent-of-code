@@ -3,7 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    for (0..1) |day| {
+    for (0..2) |day| {
         const name = b.fmt("day{d:0>2}", .{day + 1});
         const exe = b.addExecutable(.{
             .name = name,
